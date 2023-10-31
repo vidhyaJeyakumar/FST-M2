@@ -1,0 +1,28 @@
+-- Load the Text file
+inputDialogues4 = LOAD 'hdfs:///user/krishna/inputs/episodeIV_dialogues.txt' USING PigStorage('\t') AS (Name:chararray, Dialogues:chararray);
+inputDialogues5 = LOAD 'hdfs:///user/krishna/inputs/episodeV_dialogues.txt' USING PigStorage('\t') AS (Name:chararray, Dialogues:chararray);
+inputDialogues6 = LOAD 'hdfs:///user/krishna/inputs/episodeVI_dialogues.txt' USING PigStorage('\t') AS (Name:chararray, Dialogues:chararray);
+
+-- Filter out first 2 lines from each file
+ranked4 = RANK inputDialogues4;
+OnlyDialogues4 = FILTER ranked4 BY (rank_inputDialogues4 > 2);
+ranked5 = RANK inputDialogues5;
+OnlyDialogues5 = FILTER ranked5 BY (rank_inputDialogues5 > 2);
+ranked6 = RANK inputDialogues6;
+OnlyDialogues6 = FILTER ranked6 BY (rank_inputDialogues6 > 2);
+
+-- Merge the three inputs
+inputData = UNION OnlyDialogues4, OnlyDialogues5, OnlyDialogues6;
+
+-- Combine the Dialogues from the above stage
+groupByName = GROUP inputData BY Name;
+
+-- Count the occurence of Dialogues by each character (Reduce)
+names = FOREACH groupByName GENERATE $0 as Name, COUNT($1) as number_of_lines;
+namesOrdered = ORDER names BY number_of_lines DESC;
+
+-- Remove the Outputs folder
+rmf hdfs:///user/krishna/outputs;
+
+-- Store the result in HDFS
+STORE namesOrdered INTO 'hdfs:///user/krishna/outputs' using PigStorage('\t');

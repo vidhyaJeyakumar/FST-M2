@@ -1,0 +1,12 @@
+-- Create a Table
+CREATE TABLE episodes (Name STRING, Line STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' TBLPROPERTIES ("skip.header.line.count"="2");
+
+-- Loading Text Files
+LOAD DATA LOCAL INPATH '/root/inputs/episodeIV_dialogues.txt' INTO TABLE episodes;
+LOAD DATA LOCAL INPATH '/root/inputs/episodeV_dialogues.txt' INTO TABLE episodes;
+LOAD DATA LOCAL INPATH '/root/inputs/episodeVI_dialogues.txt' INTO TABLE episodes;
+
+--Output Generation
+INSERT OVERWRITE LOCAL DIRECTORY '/root' ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+SELECT Name, COUNT(Name) AS number_of_lines FROM episodes GROUP BY Name ORDER BY number_of_lines DESC;

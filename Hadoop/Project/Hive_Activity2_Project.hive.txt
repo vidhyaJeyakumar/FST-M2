@@ -1,0 +1,9 @@
+-- Create a Table
+CREATE TABLE episodeIV (Name STRING, Line STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' TBLPROPERTIES ("skip.header.line.count"="2")
+
+-- Loading Text Files
+LOAD DATA LOCAL INPATH '/root/inputs/episodeIV_dialogues.txt' INTO TABLE episodeIV;
+
+-- Output Generation
+SELECT COUNT(*) FROM episodeIV WHERE Line LIKE '%Luke%';
