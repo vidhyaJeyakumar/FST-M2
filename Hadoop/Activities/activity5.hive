@@ -1,0 +1,27 @@
+-- use database office
+use office;
+ 
+-- Deleting employee table
+DROP TABLE employee;
+
+-- create table employee
+CREATE TABLE employee
+(id INT, name STRING, dept STRING, yoj INT, salary INT)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+TBLPROPERTIES ("skip.header.line.count"="1");
+
+-- Load data into employee table
+LOAD DATA LOCAL INPATH
+'root/EmpData.csv'
+INTO TABLE employee;
+
+-- To view data in employee table
+SELECT * FROM employee;
+
+-- To run Map reduce jobs
+SELECT COUNT(*) FROM employee;
+
+-- Export results to HDFS
+INSERT OVERWRITE DIRECTORY '/user/krishna/output/export'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT * FROM employee;
